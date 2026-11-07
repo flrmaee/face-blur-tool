@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Face Blur Tool — Blur Faces, Protect Privacy</title>
+  <meta name="description" content="Detect and blur faces in your photos right in your browser. Your photos are never uploaded.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body> 
+
+<!-- SVG sprite: icons + hero illustration -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE6F8"/><stop offset="1" stop-color="#F0F8FF"/></linearGradient>
+    <filter id="hb" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+    <g id="sc-bg">
+      <rect width="320" height="220" fill="url(#sky)"/>
+      <ellipse cx="60" cy="38" rx="34" ry="12" fill="#fff" opacity=".9"/><ellipse cx="82" cy="32" rx="22" ry="12" fill="#fff" opacity=".9"/>
+      <ellipse cx="250" cy="52" rx="30" ry="10" fill="#fff" opacity=".8"/><ellipse cx="268" cy="46" rx="18" ry="10" fill="#fff" opacity=".8"/>
+      <path d="M0 190 Q80 150 160 180 T320 170 V220 H0z" fill="#B9D8F1"/>
+    </g>
+    <g id="sc-bodies">
+      <ellipse cx="80" cy="190" rx="40" ry="36" fill="#7BAFD4"/>
+      <ellipse cx="160" cy="180" rx="46" ry="40" fill="#A7C7E7"/>
+      <ellipse cx="245" cy="192" rx="38" ry="34" fill="#9CC9B0"/>
+    </g>
+    <g id="sc-f1"><circle cx="80" cy="120" r="26" fill="#F8DCC8"/><path d="M54 116a26 26 0 0 1 52 0q-26-14-52 0z" fill="#7A5C4A"/><circle cx="71" cy="121" r="3" fill="#34495E"/><circle cx="89" cy="121" r="3" fill="#34495E"/><path d="M71 132q9 8 18 0" stroke="#34495E" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+    <g id="sc-f2"><circle cx="160" cy="105" r="30" fill="#F2CDB0"/><path d="M130 100a30 30 0 0 1 60 0q-30-18-60 0z" fill="#3E4A5A"/><circle cx="149" cy="106" r="3.2" fill="#34495E"/><circle cx="171" cy="106" r="3.2" fill="#34495E"/><path d="M149 119q11 9 22 0" stroke="#34495E" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+    <g id="sc-f3"><circle cx="245" cy="122" r="25" fill="#E9BE9E"/><path d="M220 118a25 25 0 0 1 50 0q-25-14-50 0z" fill="#B6845A"/><circle cx="236" cy="123" r="3" fill="#34495E"/><circle cx="254" cy="123" r="3" fill="#34495E"/><path d="M236 134q9 8 18 0" stroke="#34495E" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+  </defs>
+  <symbol id="i-lasso" viewBox="0 0 24 24"><path d="M7 22a5 5 0 0 1-2-4"/><path d="M3.3 14A6.8 6.8 0 0 1 2 10c0-4.4 4.5-8 10-8s10 3.6 10 8-4.5 8-10 8a12 12 0 0 1-5-1"/><circle cx="5" cy="16" r="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-cloud-up" viewBox="0 0 24 24"><path d="M16 16l-4-4-4 4"/><path d="M12 12v9"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.7l5.7 5.7a8 8 0 1 1-11.3 0z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></symbol>
+  <symbol id="i-zoom-in" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></symbol>
+  <symbol id="i-zoom-out" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><polyline points="8 8 4 12 8 16"/><polyline points="16 8 20 12 16 16"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 2l2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2z"/></symbol>
+</svg>
+
+<a class="skip" href="#editor">Skip to the editor</a>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="#home" aria-label="Face Blur Tool home">
+      <span class="logo-mark"><svg class="i"><use href="#i-shield"/></svg></span>
+      <span>Face Blur Tool</span>
+    </a>
+    <nav id="navLinks" class="nav-links" aria-label="Main">
+      <a href="#home">Home</a>
+      <a href="#editor">Editor</a>
+      <a href="#features">Features</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to dark mode" data-tip="Toggle dark mode">
+        <svg class="i" id="themeIcon"><use href="#i-moon"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm" href="#editor" id="getStartedBtn">Get Started</a>
+      <button class="icon-btn nav-burger" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <svg class="i"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <span class="deco d1" aria-hidden="true">☁️</span>
+  <span class="deco d2" aria-hidden="true">✦</span>
+  <span class="deco d3" aria-hidden="true">⭐</span>
+  <span class="deco d4" aria-hidden="true">✧</span>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow"><svg class="i"><use href="#i-lock"/></svg> Private, in-browser photo protection</p>
+      <h1>Blur Faces, Protect Privacy 🩵</h1>
+      <p class="lead">Keep your memories shareable and your identity protected. Upload a photo, blur faces automatically, and download your image in seconds.</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="#editor" id="startBtn">Start Blurring</a>
+        <a class="btn btn-ghost" href="#features" id="exploreBtn">Explore Features</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-label="Before and after preview">
+      <figure class="ba-card">
+        <svg viewBox="0 0 320 220" role="img" aria-label="Illustration of three people with visible faces">
+          <use href="#sc-bg"/><use href="#sc-bodies"/><use href="#sc-f1"/><use href="#sc-f2"/><use href="#sc-f3"/>
+        </svg>
+        <figcaption>Before</figcaption>
+      </figure>
+      <figure class="ba-card after">
+        <svg viewBox="0 0 320 220" role="img" aria-label="Same illustration with faces blurred">
+          <use href="#sc-bg"/><use href="#sc-bodies"/>
+          <g filter="url(#hb)"><use href="#sc-f1"/><use href="#sc-f2"/><use href="#sc-f3"/></g>
+        </svg>
+        <figcaption>After</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="features">
+  <div class="container">
+    <h2 class="section-title">Everything you need to hide faces ✨</h2>
+    <p class="section-sub">Simple enough for a first try, precise enough for careful edits.</p>
+    <div class="feature-grid">
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-scan"/></svg></span><h3>Automatic Face Detection</h3><p>AI-powered detection finds multiple faces in each photo, right on your device.</p></article>
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-drop"/></svg></span><h3>Multiple Blur Styles</h3><p>Gaussian blur, pixelate, solid color or a cute emoji cover — with adjustable strength.</p></article>
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-pen"/></svg></span><h3>Manual Blur Tool</h3><p>Draw, move and resize your own blur regions to hide anything detection missed.</p></article>
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-lock"/></svg></span><h3>Privacy Protection</h3><p>Photos stay in your browser's memory. Nothing is uploaded, stored or saved.</p></article>
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-download"/></svg></span><h3>Instant Image Download</h3><p>Export PNG or JPEG at the original resolution with every effect baked in.</p></article>
+      <article class="card feature"><span class="f-icon"><svg class="i"><use href="#i-layers"/></svg></span><h3>Batch Photo Processing</h3><p>Process many photos at once and download them individually or as a ZIP.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EDITOR ============ -->
+<section class="section editor-section" id="editor" aria-labelledby="editorTitle">
+  <div class="container">
+    <h2 class="section-title" id="editorTitle">Photo Editor</h2>
+    <p class="section-sub">Three simple steps: upload, edit, export.</p>
+
+    <ol class="stepper" id="stepper" aria-label="Editor steps">
+      <li><button type="button" class="step is-current" data-step="1" aria-current="step"><span class="num">1</span><span class="lbl">Upload</span></button></li>
+      <li><button type="button" class="step" data-step="2"><span class="num">2</span><span class="lbl">Edit</span></button></li>
+      <li><button type="button" class="step" data-step="3"><span class="num">3</span><span class="lbl">Export</span></button></li>
+    </ol>
+
+    <!-- Photo strip + batch tools -->
+    <div class="card batch-bar" id="batchBar" hidden>
+      <div class="batch-top">
+        <h3><svg class="i"><use href="#i-layers"/></svg> Your photos <span class="count-chip" id="photoCount">0</span></h3>
+        <div class="batch-actions">
+          <button class="btn btn-ghost btn-sm" type="button" id="addMoreBtn"><svg class="i"><use href="#i-plus"/></svg> Add photos</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="applyAllBtn" data-tip="Copy this photo's blur style to every photo"><svg class="i"><use href="#i-drop"/></svg> Apply style to all</button>
+          <button class="btn btn-primary btn-sm" type="button" id="batchDetectBtn"><svg class="i"><use href="#i-scan"/></svg> Detect &amp; blur all photos</button>
+        </div>
+      </div>
+      <ul class="strip" id="strip" aria-label="Uploaded photos"></ul>
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><span id="progressFill"></span></div>
+        <p class="progress-text" id="progressText" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <!-- ===== STEP 1: UPLOAD ===== -->
+    <div class="panel" id="panel1">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload photos. Drop your photos here or press Enter to browse files">
+        <svg class="i i-xl"><use href="#i-cloud-up"/></svg>
+        <h3>Drop your photo here or <span class="link">browse files</span></h3>
+        <p>Your photos deserve privacy. Start blurring in seconds.</p>
+        <button class="btn btn-primary" type="button" id="browseBtn">Browse files</button>
+        <small>JPG, PNG or WebP · up to 25 MB each · you can select several photos</small>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple hidden>
+      </div>
+      <p class="privacy-note"><svg class="i"><use href="#i-lock"/></svg> <span>Your privacy matters 🩵 Your photos are processed directly in your browser and are not uploaded to our server.</span></p>
+      <p class="reminder-note">Automatic detection can miss faces or mark the wrong areas, so always check the final image.</p>
+
+      <div class="alert" id="errorBox" role="alert" hidden></div>
+
+      <div class="card upload-info" id="uploadInfo" hidden>
+        <img id="uploadPreview" alt="Preview of the selected photo">
+        <div class="info-body">
+          <h3 id="infoName">photo.jpg</h3>
+          <dl class="info-list">
+            <div><dt>Dimensions</dt><dd id="infoDims">—</dd></div>
+            <div><dt>File size</dt><dd id="infoSize">—</dd></div>
+            <div><dt>Format</dt><dd id="infoType">—</dd></div>
+          </dl>
+          <p class="small muted" id="infoNote" hidden></p>
+          <div class="row">
+            <button class="btn btn-ghost btn-sm" type="button" id="removeBtn"><svg class="i"><use href="#i-trash"/></svg> Remove image</button>
+            <button class="btn btn-primary" type="button" id="toEditBtn">Continue to edit →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STEP 2: EDIT ===== -->
+    <div class="panel" id="panel2" hidden>
+      <div class="edit-layout">
+        <div class="edit-main">
+          <div class="toolbar card" role="toolbar" aria-label="Editing tools">
+            <div class="tb-group">
+              <button class="icon-btn" type="button" id="undoBtn" aria-label="Undo" data-tip="Undo (Ctrl+Z)"><svg class="i"><use href="#i-undo"/></svg></button>
+              <button class="icon-btn" type="button" id="redoBtn" aria-label="Redo" data-tip="Redo (Ctrl+Shift+Z)"><svg class="i"><use href="#i-redo"/></svg></button>
+              <button class="icon-btn" type="button" id="resetBtn" aria-label="Reset to original" data-tip="Reset to original"><svg class="i"><use href="#i-reset"/></svg></button>
+            </div>
+            <div class="tb-group">
+              <button class="btn btn-toggle btn-sm" type="button" id="drawToolBtn" aria-pressed="false" data-tip="Drag on the photo to draw a blur box"><svg class="i"><use href="#i-pen"/></svg> Manual blur</button>
+            </div>
+            <div class="tb-group seg" role="group" aria-label="Comparison mode">
+              <button type="button" class="seg-btn is-on" data-view="edit" aria-pressed="true" data-tip="Edit view"><svg class="i"><use href="#i-eye"/></svg><span>Edit</span></button>
+              <button type="button" class="seg-btn" data-view="side" aria-pressed="false" data-tip="Side by side"><svg class="i"><use href="#i-columns"/></svg><span>Side by side</span></button>
+              <button type="button" class="seg-btn" data-view="slider" aria-pressed="false" data-tip="Before / after slider"><svg class="i"><use href="#i-compare"/></svg><span>Slider</span></button>
+            </div>
+            <div class="tb-group">
+              <button class="icon-btn" type="button" id="zoomOutBtn" aria-label="Zoom out" data-tip="Zoom out"><svg class="i"><use href="#i-zoom-out"/></svg></button>
+              <span class="zoom-label" id="zoomLabel" aria-live="polite">100%</span>
+              <button class="icon-btn" type="button" id="zoomInBtn" aria-label="Zoom in" data-tip="Zoom in"><svg class="i"><use href="#i-zoom-in"/></svg></button>
+              <button class="icon-btn" type="button" id="fitBtn" aria-label="Fit image to screen" data-tip="Fit to screen"><svg class="i"><use href="#i-fit"/></svg></button>
+              <button class="btn btn-ghost btn-xs" type="button" id="fitWidthBtn" data-tip="Fit to width">Width</button>
+              <button class="btn btn-ghost btn-xs" type="button" id="actualBtn" data-tip="Actual size">100%</button>
+            </div>
+          </div>
+
+          <div class="card stage-card" id="stageCard">
+            <div class="busy" id="busy" hidden role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><p id="busyText">Working…</p></div>
+
+            <!-- Edit view -->
+            <div id="viewEdit">
+              <div class="view-label">Blurred Result <span class="muted small" id="editHint">— click a face to select / deselect it</span></div>
+              <div class="scroller" id="scrollEdit">
+                <div class="stage" id="stageEdit">
+                  <canvas id="cvEdit" aria-label="Edited photo preview" role="img"></canvas>
+                  <div class="overlay" id="overlay"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side by side -->
+            <div id="viewSide" class="side-grid" hidden>
+              <div>
+                <div class="view-label">Original</div>
+                <div class="scroller" id="scrollSideA"><div class="stage"><canvas id="cvSideOrig" role="img" aria-label="Original photo"></canvas></div></div>
+              </div>
+              <div>
+                <div class="view-label">Blurred Result</div>
+                <div class="scroller" id="scrollSideB"><div class="stage"><canvas id="cvSideEdit" role="img" aria-label="Blurred result"></canvas></div></div>
+              </div>
+            </div>
+
+            <!-- Slider -->
+            <div id="viewSlider" hidden>
+              <div class="view-label">Drag the handle to compare <span class="muted small">— Original (left) · Blurred Result (right)</span></div>
+              <div class="scroller" id="scrollSlider">
+                <div class="stage cmp" id="stageSlider" style="--pos:50%">
+                  <canvas id="cvSlOrig" role="img" aria-label="Original photo"></canvas>
+                  <canvas id="cvSlEdit" class="cmp-top" role="img" aria-label="Blurred result"></canvas>
+                  <span class="cmp-tag left">Original</span><span class="cmp-tag right">Blurred Result</span>
+                  <div class="cmp-handle" id="cmpHandle" role="slider" tabindex="0" aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span></span></div>
+                </div>
+              </div>
+            </div>
+
+            <p class="alert soft" id="noFacesMsg" hidden>We couldn't find any faces in this photo 🩵 Try again, or use the Manual blur tool to cover anything you'd like to hide.</p>
+          </div>
+        </div>
+
+        <aside class="edit-side" aria-label="Edit controls">
+          <!-- Detection -->
+          <section class="card side-card">
+            <h3><svg class="i"><use href="#i-scan"/></svg> Faces</h3>
+            <div class="btn-grid">
+              <button class="btn btn-primary" type="button" id="detectBtn"><svg class="i"><use href="#i-scan"/></svg> Detect Faces</button>
+              <button class="btn btn-primary" type="button" id="blurAllBtn">Blur All Faces</button>
+              <button class="btn btn-ghost" type="button" id="blurSelBtn">Blur Selected</button>
+              <button class="btn btn-ghost" type="button" id="clearBlurBtn">Remove face blur</button>
+            </div>
+            <p class="small" id="faceSummary" aria-live="polite">No faces detected yet.</p>
+            <div class="row small-row">
+              <button class="link-btn" type="button" id="selAllBtn">Select all</button>
+              <button class="link-btn" type="button" id="selNoneBtn">Select none</button>
+            </div>
+            <ul class="face-list" id="faceList" aria-label="Detected faces"></ul>
+            <p class="small muted">Tip: drag a face box to move it, drag its corners to resize, or press Delete to remove a wrong detection.</p>
+          </section>
+
+          <!-- Style -->
+          <section class="card side-card">
+            <h3><svg class="i"><use href="#i-drop"/></svg> Blur style</h3>
+            <div class="style-grid" id="styleGroup" role="radiogroup" aria-label="Blur style">
+              <button type="button" class="style-card" role="radio" aria-checked="true" data-style="gaussian"><span class="pv pv-gauss"></span><svg class="i"><use href="#i-drop"/></svg><b>Gaussian</b></button>
+              <button type="button" class="style-card" role="radio" aria-checked="false" data-style="pixelate"><span class="pv pv-pixel"></span><svg class="i"><use href="#i-grid"/></svg><b>Pixelate</b></button>
+              <button type="button" class="style-card" role="radio" aria-checked="false" data-style="solid"><span class="pv pv-solid"></span><svg class="i"><use href="#i-square"/></svg><b>Solid color</b></button>
+              <button type="button" class="style-card" role="radio" aria-checked="false" data-style="emoji"><span class="pv pv-emoji">🩵</span><svg class="i"><use href="#i-smile"/></svg><b>Emoji</b></button>
+            </div>
+
+            <div class="ctl" id="ctlIntensity">
+              <label for="intensityRange">Intensity: <b id="intensityLabel">Strong</b></label>
+              <input type="range" id="intensityRange" min="1" max="4" step="1" value="3" aria-valuetext="Strong">
+              <div class="ticks" aria-hidden="true"><span>Light</span><span>Medium</span><span>Strong</span><span>Maximum</span></div>
+            </div>
+            <div class="ctl" id="ctlPixel" hidden>
+              <label for="pixelRange">Pixel size: <b id="pixelLabel">14</b></label>
+              <input type="range" id="pixelRange" min="4" max="40" step="1" value="14">
+            </div>
+            <div class="ctl" id="ctlColor" hidden>
+              <label for="colorInput">Cover color</label>
+              <div class="color-row">
+                <input type="color" id="colorInput" value="#A7C7E7" aria-label="Pick a cover color">
+                <div class="swatches" id="swatches"></div>
+              </div>
+            </div>
+            <div class="ctl" id="ctlEmoji" hidden>
+              <span class="lbl-like" id="emojiLbl">Emoji</span>
+              <div class="emoji-row" id="emojiRow" role="radiogroup" aria-labelledby="emojiLbl"></div>
+            </div>
+            <div class="ctl" id="ctlRadius">
+  <label for="radiusRange">Corner radius: <b id="radiusLabel">18%</b></label>
+  <input type="range" id="radiusRange" min="0" max="50" step="1" value="18">
+  <div class="ticks" aria-hidden="true"><span>Square</span><span>Rounded</span><span>Oval</span></div>
+</div>
+          </section>
+          
+
+          <!-- Manual -->
+          <section class="card side-card">
+            <h3><svg class="i"><use href="#i-pen"/></svg> Manual blur</h3>
+            <p class="small">Turn on <b>Manual blur</b> in the toolbar, then drag on the photo to draw a box. Boxes can be moved and resized any time. Works even if detection finds nothing.</p>
+            <div class="row"><span class="small" id="manualSummary">0 manual regions</span>
+              <button class="btn btn-toggle btn-sm" type="button" id="freeToolBtn" aria-pressed="false" data-tip="Draw any shape around what you want to hide"><svg class="i"><use href="#i-lasso"/></svg> Free shape</button>
+              <button class="link-btn" type="button" id="clearManualBtn">Clear all</button></div>
+          </section>
+
+          <!-- Stats -->
+          <section class="card side-card stats" aria-label="Statistics">
+            <h3><svg class="i"><use href="#i-check"/></svg> Statistics</h3>
+            <dl class="stat-list">
+              <div><dt>Faces detected</dt><dd id="stDetected">0</dd></div>
+              <div><dt>Faces blurred</dt><dd id="stBlurred">0</dd></div>
+              <div><dt>Manual regions</dt><dd id="stManual">0</dd></div>
+              <div><dt>Blur style</dt><dd id="stStyle">—</dd></div>
+              <div><dt>Intensity</dt><dd id="stIntensity">—</dd></div>
+            </dl>
+          </section>
+
+          <div class="row nav-row">
+            <button class="btn btn-ghost" type="button" id="backBtn1">← Upload</button>
+            <button class="btn btn-primary" type="button" id="toExportBtn">Continue to export →</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== STEP 3: EXPORT ===== -->
+    <div class="panel" id="panel3" hidden>
+      <div class="export-layout">
+        <div class="card export-preview">
+          <div class="view-label">Final image preview</div>
+          <div class="export-canvas-wrap"><canvas id="cvExport" role="img" aria-label="Final edited photo preview"></canvas></div>
+        </div>
+        <div class="export-side">
+          <section class="card side-card review" aria-labelledby="reviewTitle">
+            <h3 id="reviewTitle"><svg class="i"><use href="#i-shield"/></svg> Privacy review</h3>
+            <p class="almost">Your photo is almost ready! 🩵 Review your image to make sure all faces and identifying details you want hidden are properly obscured.</p>
+            <dl class="stat-list">
+              <div><dt>Total faces detected</dt><dd id="rvDetected">0</dd></div>
+              <div><dt>Total faces blurred</dt><dd id="rvBlurred">0</dd></div>
+              <div><dt>Manually blurred regions</dt><dd id="rvManual">0</dd></div>
+              <div><dt>Selected blur style</dt><dd id="rvStyle">—</dd></div>
+              <div><dt>Current blur intensity</dt><dd id="rvIntensity">—</dd></div>
+            </dl>
+            <ul class="notes" id="reviewNotes"></ul>
+            <p class="reminder-note">Please inspect the entire image — including backgrounds, reflections, name tags and license plates. Automatic detection may miss faces or mark the wrong regions.</p>
+          </section>
+
+          <section class="card side-card">
+            <h3><svg class="i"><use href="#i-download"/></svg> Download</h3>
+            <fieldset class="fmt">
+              <legend>Output format</legend>
+              <label class="chip-radio"><input type="radio" name="fmt" value="png" checked><span>PNG</span></label>
+              <label class="chip-radio"><input type="radio" name="fmt" value="jpeg"><span>JPEG</span></label>
+            </fieldset>
+            <div class="ctl" id="qualityWrap" hidden>
+              <label for="qualityRange">JPEG quality: <b id="qualityLabel">92%</b></label>
+              <input type="range" id="qualityRange" min="50" max="100" step="1" value="92">
+            </div>
+            <div class="ctl">
+              <label for="fileName">File name</label>
+              <div class="name-row"><input type="text" id="fileName" value="face-blur-edited" autocomplete="off" spellcheck="false"><span id="fileExt">.png</span></div>
+            </div>
+            <button class="btn btn-primary btn-lg" type="button" id="downloadBtn"><svg class="i"><use href="#i-download"/></svg> Download Image</button>
+            <p class="small muted" id="sizeNote">Exported at the original size.</p>
+
+            <div id="multiExport" hidden>
+              <hr>
+              <button class="btn btn-ghost" type="button" id="zipBtn"><svg class="i"><use href="#i-layers"/></svg> Download all as ZIP</button>
+              <ul class="export-list" id="exportList"></ul>
+            </div>
+          </section>
+          <div class="row nav-row"><button class="btn btn-ghost" type="button" id="backBtn2">← Back to edit</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="section" id="about">
+  <div class="container narrow">
+    <h2 class="section-title">About Face Blur Tool</h2>
+    <div class="card about-card">
+      <p>Face Blur Tool helps you share photos responsibly. It finds faces with an on-device AI model and covers them with the style you choose, so you decide what stays visible.</p>
+      <ul class="about-list">
+        <li><b>Local processing.</b> Your photos are decoded, analysed and edited in your browser's memory. They are never uploaded to a server, saved in a database or written to browser storage. (The detection model files are downloaded once from a public CDN; your photos are not part of that.)</li>
+        <li><b>You stay in control.</b> Detection is a helper, not a guarantee. It can miss small, turned or covered faces. Review the result and use the manual tool for anything else you want hidden.</li>
+        <li><b>Closing the tab clears everything.</b> There is nothing to delete afterwards.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <p>Made with ♡ for a safer online world.</p>
+</footer>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<dialog id="confirmDlg" class="dlg" aria-labelledby="dlgTitle">
+  <form method="dialog">
+    <h3 id="dlgTitle">Are you sure?</h3>
+    <p id="dlgMsg"></p>
+    <div class="row end">
+      <button class="btn btn-ghost" value="cancel" id="dlgCancel">Cancel</button>
+      <button class="btn btn-primary" value="ok" id="dlgOk">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="face-detection.js"></script>
+<script src="image-editor.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
